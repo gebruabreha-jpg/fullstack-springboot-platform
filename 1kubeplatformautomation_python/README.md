@@ -1,76 +1,54 @@
 # 1kubeplatformautomation and test automation
-
 A Python project for Kubernetes automation and robustness testing (KubePlatformAutomation).
-
 ## Goal
-
 Build a **Kubernetes pod testing automation tool** with:
 - **15 step classes** covering deployment, health, logs, metrics, and validation
 - **~100 individual test steps** for comprehensive automation
 - **BDD-style testing** using Behave (Python equivalent of Cucumber from Beets project)
-
 ## Quick Start
-
 ```bash
 # Install dependencies
 pip install -r requirements.txt
-
 # Run tests (mock mode without cluster)
 behave
-
 # With Kubernetes cluster (requires Docker)
 ./infra/setup.sh
 behave
 ```
-
 ## Architecture
-
 See [ARCHITECTURE.md](ARCHITECTURE.md) for tech stack details and API mapping from Beets.
-
 ## Overview
-
 This project implements a comprehensive robustness/chaos testing framework for Kubernetes-based telecom workloads, inspired by the Ericsson Beets/PCC test automation system. It provides automated failure injection and verification mechanisms to test system resilience.
-
 ## Core Capabilities
-
 ### 1. Container Kill (SIGKILL)
 - **Implementation**: Uses Kubernetes API to get container ID and node name, then SSH to node to send SIGKILL
 - **Step**: `When a container that controlled by resource is killed`
 - **Low-level**: `k8sNodeApi.killContainers(containerIds, KillSignal.SIGKILL)`
-
 ### 2. Pod Delete (kubectl delete)
 - **Implementation**: Uses Kubernetes API directly for reliable pod deletion
 - **Step**: `When pods controlled by resource are deleted`
 - **Low-level**: `kubectlApi.deleteResource(KubectlResourceType.PODS, podName)`
-
 ### 3. Worker Node Failure
 - **Graceful Restart**: SSH reboot or OpenStack API (`openstack server reboot`)
 - **Ungraceful (Kernel Panic)**: SSH to node → `echo c > /proc/sysrq-trigger`
-- **Step**: `When a worker node with a minority of KVDB master pods is kernel panicked`
-
+-**Step**: `When a worker node with a minority of KVDB master pods is kernel panicked`
 ### 4. Control-Plane (Master) Node Failure
 - **Graceful**: OpenStack API reboot
 - **Ungraceful**: Same kernel panic mechanism via SSH
 - **Step**: `When a control-plane node is kernel panicked`
-
 ### 5. Transport Disconnect (Network Loss between GeoRed nodes)
 - **Implementation**: Change ICR peer port via ADP CM CLI (`epg node icr peer port 50099`)
 - **Step**: `When transport between Geored nodes is disconnected by changing peer port to "50099"`
 - **Reconnection**: Restore original peer port
-
 ### 6. Litmus Chaos Experiments
 - **Framework**: Applies RBAC, experiment CRDs, and engine CRDs via kubectl
 - **Experiments**: CONTAINER_KILL, POD_CPU_HOG, POD_NETWORK_PARTITION
 - **Step**: `When the litmus experiment {} is run`
-
 ### 7. Packet Loss Verification
 - **Verification**: Check Prometheus metrics for packet loss thresholds
 - **Step**: `Given the packet loss is less than: 5 packets per million loss`
-
 ## Test Flow Pattern
-
 Every robustness scenario follows this end-to-end pattern:
-
 ### Phase 1: PRE-CONDITION (Setup/Background)
 - Traffic started (Dallas simulator generates signaling + user plane traffic)
 - Given Dallas is started
@@ -78,7 +56,6 @@ Every robustness scenario follows this end-to-end pattern:
 - Then the Dallas busy-hour is reached with parameters:
     | Tolerance | MaxFailed | Timeout | Poll Interval | Critical |
     | 3500      | 10000     | 3600    | 60            | true     |
-
 ### Phase 2: SAVE BASELINE (Start of each scenario)
 - When the container restart count values are saved as 'container_restart_counters'
 - And memorized event "failure_action_started" is saved
@@ -105,38 +82,30 @@ Every robustness scenario follows this end-to-end pattern:
   - When transport between Geored nodes is disconnected by changing peer port to "50099"
   - # ... wait ...
   - When transport between Geored nodes is reconnected by restoring peer port number
-
 ### Phase 4: WAIT FOR RECOVERY
 - And 5 minutes have passed
 - # or
 - And 10 minutes have passed
-
 ### Phase 5: VERIFICATION (Post-failure checks)
-
 1. **Signaling success rate**:
    - Then total signaling success rate is above 99.999% for the past 6 minutes
-
 2. **No unexpected container restarts**:
    - And the container restart count values have not increased since they were saved as "container_restart_counters" except:
      | Pod Prefix            | Container  | Expected Restarts |
      | eric-pc-sm-controller | controller | 1                 |
-
 3. **No unexpected alarms**:
    - Then no alarms have been active since memorized event "failure_action_started" except:
      | verdict | alarm              | details | severity |
      | ignore  | SM DB Unavailable  | ...     | N/A      |
-
 4. **Correct ISP (In-Service Performance) events occurred**:
    - Then the following ISP events have occurred exactly 1 time since memorized event "failure_action_started":
      | event_type.keyword | regexp:message.keyword                                    |
      | container-failed   | The container controller in pod eric-pc-sm-controller.* failed... |
      | container-started  | The container controller in pod eric-pc-sm-controller.* started.  |
-
 5. **Recovery time check**:
    - And verify memorized date-times satisfy the following requirements:
      | label regexp                 | corresponding label          | time difference      | requirement |
      | sm_controller_container_kill | sm_controller_pod_is_serving | less than 20 seconds | REQ18835    |
-
 6. **Packet loss check (PCG)**:
    - Given the packet loss is less than:
      | Max packet per million loss | UL/DL/ULDL | From memorized event | To memorized event/now |
@@ -146,9 +115,7 @@ Every robustness scenario follows this end-to-end pattern:
    - Then the following ISP events have occurred exactly 0 times:
      | range_gt:timestamp |
      | node_recovered     |
-
 ## Technical Implementation
-
 ### Core Libraries Used
 - **Kubernetes**: fabric8 kubernetes-client (Java) / kubernetes (Python)
 - **SSH**: JSch / Apache MINA SSHD (Java) / Paramiko (Python)
@@ -163,7 +130,6 @@ Every robustness scenario follows this end-to-end pattern:
 - **Test Framework**: Cucumber + TestNG + Guice (Java) or pytest (Python)
 
 ### Action Execution Flow
-
 **Container Kill**:
 1. Resolve pod name from resource (StatefulSet/Deployment) using KubectlApi
 2. Get container ID: `kubectlApi.getContainerId(podName, containerName)`
@@ -172,14 +138,11 @@ Every robustness scenario follows this end-to-end pattern:
 
 **Pod Delete**:
 1. `kubectlApi.deleteResource(KubectlResourceType.PODS, podName)` (equivalent to `kubectl delete pod`)
-
 **Node Kernel Panic**:
 1. SSH to node → execute `echo c > /proc/sysrq-trigger`
-
 **Transport Disconnect**:
 1. Execute CLI: `epg node icr peer port 50099` via ADP CM yang provider
 2. To reconnect: restore original peer port
-
 **Litmus Chaos**:
 1. Apply RBAC (service account)
 2. Create experiment CRD
@@ -342,3 +305,13 @@ cd "C:\Users\ewolgeb\gebru\office-weekend\1kubeplatformautomation_python"
 behave
 behave features/1.feature
 behave --tags=robustness
+
+
+Why line-by-line, not feature-by-feature:
+The step files (steps/) depend on utils/ and infra conventions — review them together before indenting principles
+
+1.py is the orchestrator (_pip_install, _find_gobin, _detect_shell, _run_infra_script, _run_behave); bugs there cascade everywhere
+
+infra scripts and configs (infra/script/, infra/config/) are the foundation everything else builds on
+
+Feature files describe tests that call step definitions — they can only be meaningfully reviewed after all step files are understood
