@@ -1,0 +1,6 @@
+kubernetes>=28.0.0
+behave>=1.2.6
+requests>=2.31.0
+prometheus-client>=0.20.0
+PyYAML>=6.0
+python-dotenv>=1.0.0

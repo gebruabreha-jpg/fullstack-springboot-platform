@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fake-worker-deployment
+  namespace: kwok-test
+spec:
+  replicas: 1000
+  selector:
+    matchLabels:
+      app: fake-worker
+  template:
+    metadata:
+      labels:
+        app: fake-worker
+    spec:
+      containers:
+        - name: app
+          ## no image will be pulled — KWOK simulates the pod entirely
+          image: python:3.11-slim
+          command:
+            - python
+            - "-c"
+            - |
+              import time
+              while True:
+                  time.sleep(10)
