@@ -2,9 +2,14 @@ import os
 import sys
 import subprocess
 import logging
+import json_log_formatter
 import shutil
+import json 
 
 #loggging
+#Structured logs (JSON) and Log collector (Fluent Bit / Vector / Filebeat)
+formatter = json_log_formatter.JSONFormatter()
+
 
 #path to different folder and directorys
 
