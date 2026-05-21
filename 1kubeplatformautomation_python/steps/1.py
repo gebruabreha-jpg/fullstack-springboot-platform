@@ -8,6 +8,7 @@ import json
 
 #loggging
 #Structured logs (JSON) and Log collector (Fluent Bit / Vector / Filebeat)
+
 formatter = json_log_formatter.JSONFormatter()
 
 
