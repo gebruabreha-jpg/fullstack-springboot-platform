@@ -29,7 +29,7 @@ def after_all(context):
     import subprocess
     log.info("Starting infrastructure teardown...")
     
-    teardown_script = Path(__file__).parent.parent / "infra" / "script" / "teardown_kwok.ps1"
+    teardown_script = Path(__file__).parent.parent / "infra" / "window_script" / "teardown_kwok.ps1"
     if teardown_script.exists():
         subprocess.run(["powershell", "-File", str(teardown_script)])
     log.info("Infrastructure teardown complete")

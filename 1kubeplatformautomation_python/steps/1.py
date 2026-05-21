@@ -10,7 +10,7 @@ from utils.logging import setup_logging, get_logger
 log = get_logger(__name__)
 
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-INFRA_SCRIPT_DIR = os.path.join(PROJECT_ROOT, "infra", "script")
+INFRA_SCRIPT_DIR = os.path.join(PROJECT_ROOT, "infra", "window_script")
 
 
 def install_dependencies():
