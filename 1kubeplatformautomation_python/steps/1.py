@@ -16,9 +16,20 @@ import shutil
 
 # Infra execution
 
+#config_environemnt-infra
+
+#deploy pcg
+
+#config_pcg
+
 # Test execution
 
+#health, cpu, metric check
+
+#others
+
 # Main orchestration or clal methods:
+
 # ----------------------------
 def run(feature_file="features/health_check.feature"):
     log.info("=== START LOCAL ORCHESTRATION ===")
