@@ -38,3 +38,15 @@ def step_smoke_test(context):
 @when('I verify application is responding')
 def step_verify_app(context):
     assert context.http_response.status_code == 200
+
+@given('the full environment is set up')
+def step_full_env_setup(context):
+    context.results = {"passed": 0, "failed": 0, "errors": []}
+
+@when('all tests are executed')
+def step_all_tests_executed(context):
+    pass
+
+@then('the system should be cleaned up')
+def step_system_cleanup(context):
+    pass

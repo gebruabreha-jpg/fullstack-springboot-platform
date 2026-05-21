@@ -15,6 +15,10 @@ def step_set_testdata(context, key, value):
 def step_set_timeout(context, seconds):
     context.timeout = seconds
 
+@given('I set namespace to "{ns}"')
+def step_set_namespace(context, ns):
+    context.namespace = ns
+
 @when('I initialize test context')
 def step_init_context(context):
     context.results = {"passed": 0, "failed": 0, "errors": []}
