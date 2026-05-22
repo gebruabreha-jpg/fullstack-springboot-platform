@@ -9,6 +9,7 @@ import json
 #loggging
 #Structured logs (JSON) and Log collector (Fluent Bit / Vector / Filebeat)
 # .sh - Shell scripts (Linux/WSL) and .ps1 - PowerShell (Windows native)
+#every fearure file will use this 1.py + TC specific steps.
 formatter = json_log_formatter.JSONFormatter()
 
 
@@ -39,16 +40,9 @@ def creat_pods():
 #config_pcg
 def conf_pods():
     pass
-# Test execution
-def run_traffic():
-    pass
 
 #health, cpu, metric check
 def health_check():
-    pass
-
-#others
-def other():
     pass
 
 # Main orchestration or clal methods:

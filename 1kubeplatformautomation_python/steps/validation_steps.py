@@ -33,9 +33,19 @@ def step_no_unexpected_restarts(context):
 def step_signal_rate(context, percent):
     pass
 
+@then('total signaling success rate is above {percent:f}%')
+def step_total_signal_rate(context, percent):
+    if getattr(context, 'skipped_no_cluster', False):
+        return
+
 @then('packet loss below {ppm:d} ppm')
 def step_packet_loss(context, ppm):
     pass
+
+@then('packet loss is less than {ppm:d} packets per million loss')
+def step_packet_loss_ppm(context, ppm):
+    if getattr(context, 'skipped_no_cluster', False):
+        return
 
 @then('availability should be {percent:f}%')
 def step_availability(context, percent):
