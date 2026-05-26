@@ -1,3 +1,55 @@
+///////////////////////////////////////####################################################################################
+Tools & Infrastructure (Verified):-
+Container Orchestration & Deployment
+Kubernetes - Core target platform; K8sNodeApi, KubectlApi, Nodes manage cluster interactions
+Helm - Application packaging/deployment via helm-api library (v0.0.202); HelmApi, HelmChartHelper, HelmApplication
+fabric8 Kubernetes client - Java API for Kubernetes operations
+Infrastructure Platforms (Environments)
+OpenShift - Kubernetes variant via OpenshiftHelper, K8sOpenshiftNodeFactory
+Azure - Cloud infrastructure via Azure SDK; AzureHandler, MsalTokenCredential
+Baremetal - Direct hardware via K8sBaremetalNodeFactory, K8sBaremetalNodeApi
+CEE (Ericsson Cloud) - Ericsson cloud platform via K8sCeeNode, CeeApi
+Mesos - Container orchestrator via K8sMesosNode, K8sMesosNodeFactory
+LPG (Lab Private Gateway) - Lab infrastructure via K8sLpgNode, K8sLpgNodeFactory
+GDCE - Global deployment via GdceNode, GdceNodeFactory
+Testing Framework
+JUnit/TestNG - Test execution engines (maven-surefire-plugin, surefire-testng)
+Cucumber - BDD framework with Gherkin; cucumber-java, cucumber-guice
+Guice - Dependency injection; guice, guice-assistedinject with Scenario/Suite scoping
+Traffic Generators
+TRex - Traffic simulation via TRexSteps, TRexRunnerApi
+Ixia - Network testing via IxiaSteps, IxiaHttpHandlerApi
+Monitoring & Metrics
+Prometheus - Metrics collection via pm-server-api; PrometheusApiWrapper, PrometheusFetchLog
+OpenSearch - Log aggregation; opensearch-rest-high-level-client
+JCAT - Logging framework; jcat-core, jcat-testng-adaptor, jcat-lightning-logwriter
+Configuration Management
+YAML/YAML profiles - Test configuration files with profile inheritance
+Overriding-properties - Dynamic configuration override library
+Messaging & Communication
+Google Cloud PubSub - Async messaging via google-cloud-pubsub; PubSubHandler, ResponseMessageReceiver
+Redis (Jedis) - Caching/state
+Network & Protocols
+NETCONF - Network device configuration via jcat-commonlibrary-netconf; NetconfApi
+3GPP PM XML - Performance metrics via 3gpp-pm-xml-lib
+HTTP Client - REST operations; httpclient
+Certificates & Security
+EJBCA - Certificate management via EjbcaSteps, EjbcaApi
+Cloud & Storage
+Azure Identity - Cloud authentication
+Artifactory/JFrog - Artifact repository via artifactory-java-client-services
+Build & CI Infrastructure
+Maven - Build automation
+Jenkins - CI automation via jenkins-client
+SonarQube - Code quality
+JaCoCo - Code coverage
+ECJ compiler - Eclipse Java compiler
+Data Handling
+Jackson - JSON/XML parsing (jackson-annotations, jackson-dataformat-xml, jackson3)
+protobuf - Protocol buffers via google-protobuf
+#######################################################################################################
+
+
 # 1kubeplatformautomation and test automation
 A Python project for Kubernetes automation and robustness testing (KubePlatformAutomation).
 ## Goal
@@ -303,54 +355,3 @@ cd "C:\Users\ewolgeb\gebru\office-weekend\1kubeplatformautomation_python"
 behave
 behave features/1.feature
 behave --tags=robustness
-
-
-///////////////////////////////////////·························#####################################################
-Tools & Infrastructure (Verified):-
-Container Orchestration & Deployment
-Kubernetes - Core target platform; K8sNodeApi, KubectlApi, Nodes manage cluster interactions
-Helm - Application packaging/deployment via helm-api library (v0.0.202); HelmApi, HelmChartHelper, HelmApplication
-fabric8 Kubernetes client - Java API for Kubernetes operations
-Infrastructure Platforms (Environments)
-OpenShift - Kubernetes variant via OpenshiftHelper, K8sOpenshiftNodeFactory
-Azure - Cloud infrastructure via Azure SDK; AzureHandler, MsalTokenCredential
-Baremetal - Direct hardware via K8sBaremetalNodeFactory, K8sBaremetalNodeApi
-CEE (Ericsson Cloud) - Ericsson cloud platform via K8sCeeNode, CeeApi
-Mesos - Container orchestrator via K8sMesosNode, K8sMesosNodeFactory
-LPG (Lab Private Gateway) - Lab infrastructure via K8sLpgNode, K8sLpgNodeFactory
-GDCE - Global deployment via GdceNode, GdceNodeFactory
-Testing Framework
-JUnit/TestNG - Test execution engines (maven-surefire-plugin, surefire-testng)
-Cucumber - BDD framework with Gherkin; cucumber-java, cucumber-guice
-Guice - Dependency injection; guice, guice-assistedinject with Scenario/Suite scoping
-Traffic Generators
-TRex - Traffic simulation via TRexSteps, TRexRunnerApi
-Ixia - Network testing via IxiaSteps, IxiaHttpHandlerApi
-Monitoring & Metrics
-Prometheus - Metrics collection via pm-server-api; PrometheusApiWrapper, PrometheusFetchLog
-OpenSearch - Log aggregation; opensearch-rest-high-level-client
-JCAT - Logging framework; jcat-core, jcat-testng-adaptor, jcat-lightning-logwriter
-Configuration Management
-YAML/YAML profiles - Test configuration files with profile inheritance
-Overriding-properties - Dynamic configuration override library
-Messaging & Communication
-Google Cloud PubSub - Async messaging via google-cloud-pubsub; PubSubHandler, ResponseMessageReceiver
-Redis (Jedis) - Caching/state
-Network & Protocols
-NETCONF - Network device configuration via jcat-commonlibrary-netconf; NetconfApi
-3GPP PM XML - Performance metrics via 3gpp-pm-xml-lib
-HTTP Client - REST operations; httpclient
-Certificates & Security
-EJBCA - Certificate management via EjbcaSteps, EjbcaApi
-Cloud & Storage
-Azure Identity - Cloud authentication
-Artifactory/JFrog - Artifact repository via artifactory-java-client-services
-Build & CI Infrastructure
-Maven - Build automation
-Jenkins - CI automation via jenkins-client
-SonarQube - Code quality
-JaCoCo - Code coverage
-ECJ compiler - Eclipse Java compiler
-Data Handling
-Jackson - JSON/XML parsing (jackson-annotations, jackson-dataformat-xml, jackson3)
-protobuf - Protocol buffers via google-protobuf
