@@ -229,9 +229,7 @@ public void runLitmusExperiments(LitmusExperiments experiment, ClustersToExecute
 }
 ```
 Experiments include: CONTAINER_KILL, POD_CPU_HOG, POD_NETWORK_PARTITION, kubelet-service-kill-chaos, docker-service-kill-chaos.
-
 ## Usage
-
 This framework can be used to test:
 - **Robustness**: System behavior under failure conditions
 - **Stability**: Long-running system behavior
@@ -307,11 +305,51 @@ behave features/1.feature
 behave --tags=robustness
 
 
-Why line-by-line, not feature-by-feature:
-The step files (steps/) depend on utils/ and infra conventions — review them together before indenting principles
-
-1.py is the orchestrator (_pip_install, _find_gobin, _detect_shell, _run_infra_script, _run_behave); bugs there cascade everywhere
-
-infra scripts and configs (infra/script/, infra/config/) are the foundation everything else builds on
-
-Feature files describe tests that call step definitions — they can only be meaningfully reviewed after all step files are understood
+Tools & Infrastructure (Verified):-
+Container Orchestration & Deployment
+Kubernetes - Core target platform; K8sNodeApi, KubectlApi, Nodes manage cluster interactions
+Helm - Application packaging/deployment via helm-api library (v0.0.202); HelmApi, HelmChartHelper, HelmApplication
+fabric8 Kubernetes client - Java API for Kubernetes operations
+Infrastructure Platforms (Environments)
+OpenShift - Kubernetes variant via OpenshiftHelper, K8sOpenshiftNodeFactory
+Azure - Cloud infrastructure via Azure SDK; AzureHandler, MsalTokenCredential
+Baremetal - Direct hardware via K8sBaremetalNodeFactory, K8sBaremetalNodeApi
+CEE (Ericsson Cloud) - Ericsson cloud platform via K8sCeeNode, CeeApi
+Mesos - Container orchestrator via K8sMesosNode, K8sMesosNodeFactory
+LPG (Lab Private Gateway) - Lab infrastructure via K8sLpgNode, K8sLpgNodeFactory
+GDCE - Global deployment via GdceNode, GdceNodeFactory
+Testing Framework
+JUnit/TestNG - Test execution engines (maven-surefire-plugin, surefire-testng)
+Cucumber - BDD framework with Gherkin; cucumber-java, cucumber-guice
+Guice - Dependency injection; guice, guice-assistedinject with Scenario/Suite scoping
+Traffic Generators
+TRex - Traffic simulation via TRexSteps, TRexRunnerApi
+Ixia - Network testing via IxiaSteps, IxiaHttpHandlerApi
+Monitoring & Metrics
+Prometheus - Metrics collection via pm-server-api; PrometheusApiWrapper, PrometheusFetchLog
+OpenSearch - Log aggregation; opensearch-rest-high-level-client
+JCAT - Logging framework; jcat-core, jcat-testng-adaptor, jcat-lightning-logwriter
+Configuration Management
+YAML/YAML profiles - Test configuration files with profile inheritance
+Overriding-properties - Dynamic configuration override library
+Messaging & Communication
+Google Cloud PubSub - Async messaging via google-cloud-pubsub; PubSubHandler, ResponseMessageReceiver
+Redis (Jedis) - Caching/state
+Network & Protocols
+NETCONF - Network device configuration via jcat-commonlibrary-netconf; NetconfApi
+3GPP PM XML - Performance metrics via 3gpp-pm-xml-lib
+HTTP Client - REST operations; httpclient
+Certificates & Security
+EJBCA - Certificate management via EjbcaSteps, EjbcaApi
+Cloud & Storage
+Azure Identity - Cloud authentication
+Artifactory/JFrog - Artifact repository via artifactory-java-client-services
+Build & CI Infrastructure
+Maven - Build automation
+Jenkins - CI automation via jenkins-client
+SonarQube - Code quality
+JaCoCo - Code coverage
+ECJ compiler - Eclipse Java compiler
+Data Handling
+Jackson - JSON/XML parsing (jackson-annotations, jackson-dataformat-xml, jackson3)
+protobuf - Protocol buffers via google-protobuf
