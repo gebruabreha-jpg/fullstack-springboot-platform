@@ -32,5 +32,42 @@ External integrations: Artifactory, Jenkins, SFTP, Kubernetes, Helm, etc.
 Test lifecycle complexity: Parallel execution, cleanup, timeouts, logging
 Configuration management: Multiple config sources, namespace handling, secrets
 ActionsHelper.java (line 99) is intentionally final with private constructor - a utility class pattern for static helper methods, avoiding instantiation.
-
 Without these patterns, the framework couldn't manage the complexity of testing Ericsson's cloud-native telecom infrastructure across diverse environments.
+
+
+Multi-Tenant SaaS Patterns (Keep/Drop):-
+Keep (adapted):
+Interface + Impl → Tenant-aware service contracts
+DI scoping → @RequestScope or @TenantScope (Spring) instead of TestcaseScoped
+ClusterMap → Simplified to TenantContext - map tenant ID to resources
+
+Still Drop (telecom-specific):
+SSH shell navigators (TRexRunner, ToolServerNavigator)
+Port forwarding (KeepAlivePortForwarder)
+Hardware/network abstractions (dpdk_nic_bind.py, PCI device management)
+Telecom protocols (Yang CLI, SNMP traps)
+
+Modern Java alternatives they could adopt:-
+Records for DTOs instead of getters/setters
+Pattern matching (instanceof: if (obj instanceof String s) {...})
+Virtual threads (Java 21) instead of ParallelExecutionUtil
+HttpClient built-in instead of Apache HttpClients
+JUnit 5 + Quarkus/Micronaut + Kubernetes Java client
+java11+ HttpClient, Virtual threads (Java 21), built-in DI
+Core Features (P0):
+Configuration loader - YAML/JSON properties system
+Single tool driver - Start with simplest like TRexRunner equivalent (start/stop/upload)
+Test lifecycle - Setup/teardown hooks (JUnit 5 extensions)
+Kubernetes integration - Pod status, exec, port-forward
+Assertions API - Fluent assertions for test results
+Next features (P1):
+Helm chart management
+Artifactory/binary downloads
+Parallel execution with virtual threads
+Cleanup registry pattern
+Logging/metrics collection
+Later (P2/P3):
+Multi-cluster/tenant support
+Telecom-specific protocols (SNMP, Yang CLI)
+Advanced reporting (JCAT equivalent)
+Security/certificates management
