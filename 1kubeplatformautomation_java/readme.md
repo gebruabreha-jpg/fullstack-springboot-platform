@@ -22,3 +22,15 @@ LinuxNavigatorBuilder for shell navigator configuration
 DallasPackage/OutlinePackage using factory methods (create())
 Strategy Pattern
 SutActions with PccActionsFactory, PcgActionsFactory, WmgActions - selected based on product type
+
+
+
+The patterns are indeed abundant, but necessary for this enterprise telecom test automation framework that tests complex systems like:
+Multiple products: PCC, PCG, WMG (handled via Strategy pattern with SutActions)
+Multi-cluster/Kubernetes environments: Each cluster needs its own API instances (ClusterMap pattern)
+External integrations: Artifactory, Jenkins, SFTP, Kubernetes, Helm, etc.
+Test lifecycle complexity: Parallel execution, cleanup, timeouts, logging
+Configuration management: Multiple config sources, namespace handling, secrets
+ActionsHelper.java (line 99) is intentionally final with private constructor - a utility class pattern for static helper methods, avoiding instantiation.
+
+Without these patterns, the framework couldn't manage the complexity of testing Ericsson's cloud-native telecom infrastructure across diverse environments.
