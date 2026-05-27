@@ -48,6 +48,19 @@
             <artifactId>kubernetes-client</artifactId>
             <version>${fabric8.kubernetes.version}</version>
         </dependency>
+        
+        <!-- Helm support for chart-based deployments -->
+        <dependency>
+            <groupId>io.fabric8</groupId>
+            <artifactId>helm-client</artifactId>
+            <version>${fabric8.kubernetes.version}</version>
+        </dependency>
+        
+        <!-- Prometheus metrics for test observability -->
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-micrometer-registry-prometheus</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
