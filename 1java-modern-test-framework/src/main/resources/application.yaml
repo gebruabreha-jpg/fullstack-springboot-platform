@@ -1,4 +1,0 @@
-test:
-  namespace: test-ns
-  cluster: test-cluster
-  kubeconfig: ~/.kube/config
