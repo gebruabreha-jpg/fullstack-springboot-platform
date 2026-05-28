@@ -9,6 +9,7 @@ class ExporterBase(BaseModel):
     phone: Optional[str] = None
     address: Optional[str] = None
     company_registration: Optional[str] = None
+    tax_id: Optional[str] = None
 
 class ExporterCreate(ExporterBase):
     pass
@@ -17,6 +18,7 @@ class Exporter(ExporterBase):
     id: int
     is_active: bool
     created_at: datetime
+    deleted_at: Optional[datetime] = None
     
     class Config:
         from_attributes = True
@@ -36,7 +38,9 @@ class Supplier(SupplierBase):
     id: int
     exporter_id: int
     gps_coordinates: Optional[dict] = None
+    verification_status: str
     created_at: datetime
+    deleted_at: Optional[datetime] = None
     
     class Config:
         from_attributes = True
@@ -57,6 +61,7 @@ class Farm(FarmBase):
     supplier_id: int
     boundary_polygon: Optional[dict] = None
     created_at: datetime
+    deleted_at: Optional[datetime] = None
     
     class Config:
         from_attributes = True
@@ -69,7 +74,6 @@ class CoffeeLotBase(BaseModel):
 
 class CoffeeLotCreate(CoffeeLotBase):
     exporter_id: int
-    farm_ids: Optional[list[int]] = None
     harvest_start: Optional[datetime] = None
     harvest_end: Optional[datetime] = None
 
@@ -78,7 +82,7 @@ class CoffeeLot(CoffeeLotBase):
     exporter_id: int
     status: str
     created_at: datetime
-    farms: Optional[list[int]] = None
+    deleted_at: Optional[datetime] = None
     
     class Config:
         from_attributes = True
@@ -98,6 +102,7 @@ class Shipment(ShipmentBase):
     arrival_date: Optional[datetime] = None
     status: str
     created_at: datetime
+    deleted_at: Optional[datetime] = None
     
     class Config:
         from_attributes = True
@@ -119,6 +124,45 @@ class Document(DocumentBase):
     file_path: str
     uploaded_by: Optional[str] = None
     created_at: datetime
+    deleted_at: Optional[datetime] = None
     
     class Config:
         from_attributes = True
+
+class BuyerBase(BaseModel):
+    company_name: str
+    contact_email: EmailStr
+
+class BuyerCreate(BuyerBase):
+    exporter_id: int
+
+class Buyer(BuyerBase):
+    id: int
+    exporter_id: int
+    access_token: str
+    created_at: datetime
+    deleted_at: Optional[datetime] = None
+    
+    class Config:
+        from_attributes = True
+
+class UserBase(BaseModel):
+    email: EmailStr
+    role: Optional[str] = "exporter_admin"
+
+class UserCreate(UserBase):
+    password: str
+    exporter_id: int
+
+class User(UserBase):
+    id: int
+    exporter_id: int
+    created_at: datetime
+    deleted_at: Optional[datetime] = None
+    
+    class Config:
+        from_attributes = True
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str = "bearer"

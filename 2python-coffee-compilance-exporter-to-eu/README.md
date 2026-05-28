@@ -92,13 +92,15 @@ coffee-exporter-eu/
 │   │   │   └── ShipmentChecklist.tsx
 │   │   └── lib/
 │   └── package.json
-├── docker/
+├── zdocker/
 │   ├── Dockerfile.backend
 │   └── init.sql
 └── docker-compose.yml
 ```
 
 ## Database Schema
+
+See [docs/DATABASE_ARCHITECTURE.md](docs/DATABASE_ARCHITECTURE.md) for complete production-ready schema.
 
 ### Core Entities
 

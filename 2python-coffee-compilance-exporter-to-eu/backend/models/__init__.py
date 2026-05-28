@@ -1,4 +1,9 @@
-from .coffee import Exporter, Supplier, Farm, CoffeeLot, Shipment, Document
-from ..db.database import Base
+from .coffee import (
+    Base, Exporter, Supplier, Farm, CoffeeLot, Shipment, 
+    Document, VerificationRecord, Buyer, User, lot_farms
+)
 
-__all__ = ["Exporter", "Supplier", "Farm", "CoffeeLot", "Shipment", "Document", "Base"]
+__all__ = [
+    "Base", "Exporter", "Supplier", "Farm", "CoffeeLot", 
+    "Shipment", "Document", "VerificationRecord", "Buyer", "User", "lot_farms"
+]

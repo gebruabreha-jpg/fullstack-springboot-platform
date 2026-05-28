@@ -1,6 +1,14 @@
 from sqlalchemy.orm import Session
-from ..models.coffee import Exporter, Supplier, Farm, CoffeeLot, Shipment, Document
-from ..schemas.coffee import ExporterCreate, SupplierCreate, FarmCreate, CoffeeLotCreate, ShipmentCreate, DocumentCreate
+from ..models.coffee import (
+    Exporter, Supplier, Farm, CoffeeLot, Shipment, Document, 
+    VerificationRecord, Buyer, User, lot_farms
+)
+from ..schemas.coffee import (
+    ExporterCreate, SupplierCreate, FarmCreate, CoffeeLotCreate, 
+    ShipmentCreate, DocumentCreate, BuyerCreate, UserCreate
+)
+from ..core.security import get_password_hash
+import uuid
 
 # Exporter CRUD
 def create_exporter(db: Session, exporter: ExporterCreate):
@@ -11,10 +19,10 @@ def create_exporter(db: Session, exporter: ExporterCreate):
     return db_exporter
 
 def get_exporter(db: Session, exporter_id: int):
-    return db.query(Exporter).filter(Exporter.id == exporter_id).first()
+    return db.query(Exporter).filter(Exporter.id == exporter_id, Exporter.deleted_at.is_(None)).first()
 
 def get_exporters(db: Session, skip: int = 0, limit: int = 100):
-    return db.query(Exporter).offset(skip).limit(limit).all()
+    return db.query(Exporter).filter(Exporter.deleted_at.is_(None)).offset(skip).limit(limit).all()
 
 # Supplier CRUD
 def create_supplier(db: Session, supplier: SupplierCreate):
@@ -25,10 +33,10 @@ def create_supplier(db: Session, supplier: SupplierCreate):
     return db_supplier
 
 def get_supplier(db: Session, supplier_id: int):
-    return db.query(Supplier).filter(Supplier.id == supplier_id).first()
+    return db.query(Supplier).filter(Supplier.id == supplier_id, Supplier.deleted_at.is_(None)).first()
 
 def get_suppliers_by_exporter(db: Session, exporter_id: int):
-    return db.query(Supplier).filter(Supplier.exporter_id == exporter_id).all()
+    return db.query(Supplier).filter(Supplier.exporter_id == exporter_id, Supplier.deleted_at.is_(None)).all()
 
 # Farm CRUD
 def create_farm(db: Session, farm: FarmCreate):
@@ -39,28 +47,34 @@ def create_farm(db: Session, farm: FarmCreate):
     return db_farm
 
 def get_farms_by_supplier(db: Session, supplier_id: int):
-    return db.query(Farm).filter(Farm.supplier_id == supplier_id).all()
+    return db.query(Farm).filter(Farm.supplier_id == supplier_id, Farm.deleted_at.is_(None)).all()
 
 # Coffee Lot CRUD
-def create_coffee_lot(db: Session, lot: CoffeeLotCreate):
-    db_lot = CoffeeLot(**lot.model_dump())
+def create_coffee_lot(db: Session, lot: CoffeeLotCreate, db_farm_ids: list[int] = None):
+    lot_data = lot.model_dump()
+    db_farm_ids = lot_data.pop('farm_ids', None) or db_farm_ids
+    db_lot = CoffeeLot(**lot_data)
+    if db_farm_ids:
+        from sqlalchemy import select
+        farms = db.query(Farm).filter(Farm.id.in_(db_farm_ids)).all()
+        db_lot.farms = farms
     db.add(db_lot)
     db.commit()
     db.refresh(db_lot)
     return db_lot
 
 def get_coffee_lot(db: Session, lot_id: int):
-    return db.query(CoffeeLot).filter(CoffeeLot.id == lot_id).first()
+    return db.query(CoffeeLot).filter(CoffeeLot.id == lot_id, CoffeeLot.deleted_at.is_(None)).first()
 
 def get_lots_by_exporter(db: Session, exporter_id: int):
-    return db.query(CoffeeLot).filter(CoffeeLot.exporter_id == exporter_id).all()
+    return db.query(CoffeeLot).filter(CoffeeLot.exporter_id == exporter_id, CoffeeLot.deleted_at.is_(None)).all()
 
 def calculate_readiness_score(db: Session, lot_id: int) -> int:
     lot = get_coffee_lot(db, lot_id)
     if not lot:
         return 0
     
-    score = 20
+    score = 20  # Base score
     
     suppliers = get_suppliers_by_exporter(db, lot.exporter_id)
     farms_total = sum(len(get_farms_by_supplier(db, s.id)) for s in suppliers)
@@ -85,7 +99,7 @@ def create_shipment(db: Session, shipment: ShipmentCreate):
     return db_shipment
 
 def get_shipment(db: Session, shipment_id: int):
-    return db.query(Shipment).filter(Shipment.id == shipment_id).first()
+    return db.query(Shipment).filter(Shipment.id == shipment_id, Shipment.deleted_at.is_(None)).first()
 
 # Document CRUD
 def create_document(db: Session, document: DocumentCreate):
@@ -96,4 +110,41 @@ def create_document(db: Session, document: DocumentCreate):
     return db_document
 
 def get_documents_for_lot(db: Session, lot_id: int):
-    return db.query(Document).filter(Document.documentable_type == "lot", Document.documentable_id == lot_id).all()
+    return db.query(Document).filter(Document.documentable_type == "lot", Document.documentable_id == lot_id, Document.deleted_at.is_(None)).all()
+
+# User CRUD
+def create_user(db: Session, user: UserCreate):
+    db_user = User(
+        email=user.email,
+        password_hash=get_password_hash(user.password),
+        exporter_id=user.exporter_id,
+        role=user.role
+    )
+    db.add(db_user)
+    db.commit()
+    db.refresh(db_user)
+    return db_user
+
+def get_user_by_email(db: Session, email: str):
+    return db.query(User).filter(User.email == email, User.deleted_at.is_(None)).first()
+
+def authenticate_user(db: Session, email: str, password: str):
+    from ..core.security import verify_password
+    user = get_user_by_email(db, email)
+    if not user or not verify_password(password, user.password_hash):
+        return None
+    return user
+
+# Buyer CRUD
+def create_buyer(db: Session, buyer: BuyerCreate):
+    db_buyer = Buyer(
+        **buyer.model_dump(),
+        access_token=str(uuid.uuid4())
+    )
+    db.add(db_buyer)
+    db.commit()
+    db.refresh(db_buyer)
+    return db_buyer
+
+def get_buyer_by_token(db: Session, token: str):
+    return db.query(Buyer).filter(Buyer.access_token == token, Buyer.deleted_at.is_(None)).first()
