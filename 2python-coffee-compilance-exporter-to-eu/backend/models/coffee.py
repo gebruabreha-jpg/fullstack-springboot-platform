@@ -1,7 +1,14 @@
-from sqlalchemy import Column, Integer, String, Boolean, DateTime, DECIMAL, Enum, ForeignKey, Text, JSON
+from sqlalchemy import Column, Integer, String, Boolean, DateTime, DECIMAL, Enum, ForeignKey, Text, JSON, Table
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from ..db.database import Base
+
+lot_farms = Table(
+    "lot_farms",
+    Base.metadata,
+    Column("lot_id", Integer, ForeignKey("coffee_lots.id"), primary_key=True),
+    Column("farm_id", Integer, ForeignKey("farms.id"), primary_key=True),
+)
 
 class Exporter(Base):
     __tablename__ = "exporters"
@@ -14,6 +21,7 @@ class Exporter(Base):
     company_registration = Column(String, nullable=True)
     is_active = Column(Boolean, default=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
+    created_by = Column(String, nullable=True)
     
     suppliers = relationship("Supplier", back_populates="exporter")
     coffee_lots = relationship("CoffeeLot", back_populates="exporter")
@@ -30,6 +38,7 @@ class Supplier(Base):
     email = Column(String, nullable=True)
     gps_coordinates = Column(JSON, nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
+    created_by = Column(String, nullable=True)
     
     exporter = relationship("Exporter", back_populates="suppliers")
     farms = relationship("Farm", back_populates="supplier")
@@ -46,9 +55,10 @@ class Farm(Base):
     variety = Column(String, nullable=True)
     harvest_period = Column(String, nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
+    created_by = Column(String, nullable=True)
     
     supplier = relationship("Supplier", back_populates="farms")
-    documents = relationship("Document", back_populates="farm")
+    lots = relationship("CoffeeLot", secondary=lot_farms, back_populates="farms")
 
 class CoffeeLot(Base):
     __tablename__ = "coffee_lots"
@@ -58,15 +68,17 @@ class CoffeeLot(Base):
     lot_id = Column(String, nullable=False)
     name = Column(String, nullable=True)
     origin_region = Column(String, nullable=True)
-    farm_count = Column(Integer, nullable=True)
     weight_kg = Column(DECIMAL, nullable=True)
     harvest_start = Column(DateTime, nullable=True)
     harvest_end = Column(DateTime, nullable=True)
     status = Column(Enum("registered", "gps_uploaded", "traceability_complete", "ready", "shipped", name="lot_status"), default="registered")
     created_at = Column(DateTime(timezone=True), server_default=func.now())
+    created_by = Column(String, nullable=True)
     
     exporter = relationship("Exporter", back_populates="coffee_lots")
     shipments = relationship("Shipment", back_populates="coffee_lot")
+    farms = relationship("Farm", secondary=lot_farms, back_populates="lots")
+    documents = relationship("Document", back_populates="lot")
 
 class Shipment(Base):
     __tablename__ = "shipments"
@@ -80,6 +92,7 @@ class Shipment(Base):
     arrival_date = Column(DateTime, nullable=True)
     status = Column(Enum("draft", "ready", "shipped", "delivered", name="shipment_status"), default="draft")
     created_at = Column(DateTime(timezone=True), server_default=func.now())
+    created_by = Column(String, nullable=True)
     
     coffee_lot = relationship("CoffeeLot", back_populates="shipments")
     documents = relationship("Document", back_populates="shipment")
@@ -96,4 +109,7 @@ class Document(Base):
     uploaded_by = Column(String, nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     
+    farm = relationship("Farm", back_populates="documents")
+    lot = relationship("CoffeeLot", back_populates="documents")
     shipment = relationship("Shipment", back_populates="documents")
+    supplier = relationship("Supplier", back_populates="documents")

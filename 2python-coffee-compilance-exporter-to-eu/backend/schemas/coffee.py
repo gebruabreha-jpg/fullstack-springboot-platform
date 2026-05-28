@@ -69,15 +69,16 @@ class CoffeeLotBase(BaseModel):
 
 class CoffeeLotCreate(CoffeeLotBase):
     exporter_id: int
+    farm_ids: Optional[list[int]] = None
     harvest_start: Optional[datetime] = None
     harvest_end: Optional[datetime] = None
 
 class CoffeeLot(CoffeeLotBase):
     id: int
     exporter_id: int
-    farm_count: Optional[int] = None
     status: str
     created_at: datetime
+    farms: Optional[list[int]] = None
     
     class Config:
         from_attributes = True
