@@ -1,6 +1,6 @@
 # Fault Injection & Deployment Actions Catalog
 ## PCC Test Framework + Beets Framework
-## POD KILL / CONTAINER KILL ACTIONS
+1.POD KILL / CONTAINER KILL ACTIONS
 ### PCC Test Framework
 | Step Definition | File | Method |
 |-----------------|------|--------|
@@ -17,9 +17,13 @@
 | `cre pod reboot one by one use method kill container` | UpfCreIntegrationSteps.java:1930 | Kill container method |
 | `cre pod reboot one by one use method kubectl delete pod` | UpfCreIntegrationSteps.java:1932 | Kubectl delete pod |
 
+
+
+
+
 ---
 
-## NODE FAILURE ACTIONS
+#2 NODE FAILURE ACTIONS
 
 ### PCC Test Framework
 **NodeAction Enum Values:**
