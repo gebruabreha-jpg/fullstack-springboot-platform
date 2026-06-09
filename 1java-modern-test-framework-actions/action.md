@@ -143,48 +143,9 @@
 | `kubelet_service_kill` | Kill kubelet |
 | `docker_service_kill` | Kill docker daemon |
 
----
-
-## ADDITIONAL FAULT INJECTION ACTIONS
-
-### Traffic Generators
-| Action | Description |
-|--------|-------------|
-| `TRex is started/stopped` | Traffic generation via TRex |
-| `Xperf is stopped` | Traffic model control |
-| `Gladiator injects traffic` | Traffic injection via Gladiator |
-
-### Simulator Actions (Dallas)
-| Action | Description |
-|--------|-------------|
-| `Dallas is stopped/stopped within {int} seconds` | Simulator control |
-| `Dallas host is reinstalled` | Host reinstall |
-| `Dallas upfsim is restarted` | UPF simulator restart |
-| `Dallas SGW-C sims are restarted` | SGW simulator restart |
-
-### Network Functions
-| Action | Description |
-|--------|-------------|
-| `TOR {string} is restarted` | TOR restart |
-| `a MSC_VLR is restarted` | MSC/VLR restart |
-| `an HssUdm is restarted {graceful_or_ungraceful}` | HSS/UDM restart |
-| `AMF sim is {binary_condition}` | AMF simulator control |
-| `NRF is {binary_condition}` | NRF simulator control |
-| `SMF is restarted {graceful_or_ungraceful}` | SMF restart |
-| `SGW is restarted` | SGW restart |
-| `SMSF is restarted {graceful_or_ungraceful}` | SMSF restart |
-
----
-
-## ACTION COUNTS
-- **PCC Framework:** 542 unique step definitions
-- **Beets Framework:** 727 unique step definitions
-- **Total:** 1,269+ actionable fault injection patterns
-
 ## Shared Capabilities
 Both frameworks support:
 - Pod kill/restart (kubectl delete, container kill, process kill)
 - Node failure (restart, shutdown, kernel panic, destroy)
 - Network chaos (Litmus experiments, tc traffic control)
 - Helm deployments (install, upgrade, rollback, delete)
-- Interface control (bring down/up, drop packets)
