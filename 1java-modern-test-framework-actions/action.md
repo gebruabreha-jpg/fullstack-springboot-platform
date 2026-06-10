@@ -84,31 +84,6 @@
 
 ---
 
-## HELM CHART DEPLOYMENT ACTIONS
-
-### PCC Test Framework (HelmApi.java)
-| Method | Description |
-|--------|-------------|
-| `installHelmChart(chart, releaseName, namespace, values, version)` | Full install with values |
-| `upgradeHelmChart(releaseName, chart, namespace, values, ...)` | Helm upgrade |
-| `deleteChart(releaseName, namespace)` | Helm uninstall |
-| `rollbackToProvidedRevision(releaseName, revision, namespace)` | Helm rollback |
-
-### PCC Step Definitions
-| Step | File |
-|------|------|
-| `helm chart is upgraded with additional set flags` | - |
-| Helm install/upgrade with pod restart coordination | - |
-
-### Beets Framework
-| Step Definition | File | Line |
-|-----------------|------|------|
-| `the Helm chart is installed in namespace {string} with the following parameters` | DeploymentSteps.java | 1679 |
-| `the Helm chart is removed and redeployed` | DeploymentSteps.java | 634 |
-| `saved helm chart is reinstalled` | DeploymentSteps.java | 678 |
-| `Helm chart is {helm_action} while {int} pods from the following prefixes are restarted` | - |
-
----
 
 ## POD RESTART CONTROL ACTIONS
 
@@ -142,6 +117,33 @@
 | `pod_io_stress` | Disk I/O stress |
 | `kubelet_service_kill` | Kill kubelet |
 | `docker_service_kill` | Kill docker daemon |
+
+## HELM CHART DEPLOYMENT ACTIONS
+
+### PCC Test Framework (HelmApi.java)
+| Method | Description |
+|--------|-------------|
+| `installHelmChart(chart, releaseName, namespace, values, version)` | Full install with values |
+| `upgradeHelmChart(releaseName, chart, namespace, values, ...)` | Helm upgrade |
+| `deleteChart(releaseName, namespace)` | Helm uninstall |
+| `rollbackToProvidedRevision(releaseName, revision, namespace)` | Helm rollback |
+
+### PCC Step Definitions
+| Step | File |
+|------|------|
+| `helm chart is upgraded with additional set flags` | - |
+| Helm install/upgrade with pod restart coordination | - |
+
+### Beets Framework
+| Step Definition | File | Line |
+|-----------------|------|------|
+| `the Helm chart is installed in namespace {string} with the following parameters` | DeploymentSteps.java | 1679 |
+| `the Helm chart is removed and redeployed` | DeploymentSteps.java | 634 |
+| `saved helm chart is reinstalled` | DeploymentSteps.java | 678 |
+| `Helm chart is {helm_action} while {int} pods from the following prefixes are restarted` | - |
+
+---
+
 
 ## Shared Capabilities
 Both frameworks support:
