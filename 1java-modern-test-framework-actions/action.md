@@ -1,6 +1,8 @@
 # Fault Injection & Deployment Actions Catalog
 ## PCC Test Framework + Beets Framework
-1.POD KILL / CONTAINER KILL ACTIONS
+
+## 1. POD KILL / CONTAINER KILL ACTIONS
+
 ### PCC Test Framework
 | Step Definition | File | Method |
 |-----------------|------|--------|
@@ -17,13 +19,9 @@
 | `cre pod reboot one by one use method kill container` | UpfCreIntegrationSteps.java:1930 | Kill container method |
 | `cre pod reboot one by one use method kubectl delete pod` | UpfCreIntegrationSteps.java:1932 | Kubectl delete pod |
 
-
-
-
-
 ---
 
-#2 NODE FAILURE ACTIONS
+## 2. NODE FAILURE ACTIONS
 
 ### PCC Test Framework
 **NodeAction Enum Values:**
@@ -33,8 +31,8 @@
 - `DESTROYED` - Node destruction
 - `SHUT_DOWN` - Node shutdown (K8sNode.java:905-921)
 - `DRAINED` - Drain node of pods
-- `CORDED` - Cordon node (prevent scheduling)
-- `UNCORDED` - Uncordon node (enable scheduling)
+- `CORDONED` - Cordon node (prevent scheduling)
+- `UNCORDONED` - Uncordon node (enable scheduling)
 
 **Step Definitions:**
 | Step | File | Line |
@@ -52,7 +50,7 @@
 
 ---
 
-## NETWORK LOSS ACTIONS
+## 3. NETWORK LOSS ACTIONS
 
 ### PCC Test Framework - Litmus Experiments
 | Enum Value | Description |
@@ -84,8 +82,7 @@
 
 ---
 
-
-## POD RESTART CONTROL ACTIONS
+## 4. POD RESTART CONTROL ACTIONS
 
 ### PCC Test Framework
 | Step Definition | File | Line |
@@ -103,7 +100,7 @@
 
 ---
 
-## CHAOS EXPERIMENTS (Litmus)
+## 5. CHAOS EXPERIMENTS (Litmus)
 
 | Experiment | Purpose |
 |------------|---------|
@@ -118,7 +115,9 @@
 | `kubelet_service_kill` | Kill kubelet |
 | `docker_service_kill` | Kill docker daemon |
 
-## HELM CHART DEPLOYMENT ACTIONS
+---
+
+## 6. HELM CHART DEPLOYMENT ACTIONS
 
 ### PCC Test Framework (HelmApi.java)
 | Method | Description |
@@ -144,10 +143,20 @@
 
 ---
 
-
 ## Shared Capabilities
+
 Both frameworks support:
 - Pod kill/restart (kubectl delete, container kill, process kill)
 - Node failure (restart, shutdown, kernel panic, destroy)
 - Network chaos (Litmus experiments, tc traffic control)
 - Helm deployments (install, upgrade, rollback, delete)
+
+## Summary
+
+This catalog documents fault injection and deployment actions across the PCC Test Framework and Beets Framework. The main categories are:
+1. **Container/Pod Kill Actions** - Killing containers and restarting pods
+2. **Node Failure Actions** - Restarting, shutting down, and kernel panicking nodes
+3. **Network Loss Actions** - Interface control, packet loss, and Litmus experiments
+4. **Pod Restart Control Actions** - Pod deletion and restart operations
+5. **Chaos Experiments** - Litmus-based chaos testing
+6. **Helm Chart Deployment Actions** - Install, upgrade, rollback, and delete operations
