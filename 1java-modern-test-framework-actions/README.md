@@ -1,10 +1,6 @@
 # Modern Test Framework
-
 A modern test framework built with Java, Quarkus, Kubernetes client, Helm, and JUnit 5.
-
 ## Project Structure
-
-```
 modern-test-framework/
 ├── pom.xml
 ├── src/
