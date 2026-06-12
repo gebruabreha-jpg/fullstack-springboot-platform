@@ -1,0 +1,5 @@
+kubeconfig.path: ~/.kube/config
+cluster.name: default
+namespace: default
+experiment.timeout: 300
+chaos.result.ttl: 3600
