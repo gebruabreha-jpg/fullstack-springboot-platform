@@ -1,12 +1,4 @@
 # Modern Test Framework Actions — Platform Engineering Guide
-
-## Overview
-
-This directory documents fault injection and deployment actions extracted from the PCC and Beets test frameworks. The Java files are self-contained reference implementations that show how each action pattern works independently, without requiring the full project context.
-
-## Directory Structure
-
-```
 1java-modern-test-framework-actions/
 ├── Pod-Container/
 │   ├── CONTAINER KILL ACTIONS.java    # Standalone Java reference for container/pod kill actions
