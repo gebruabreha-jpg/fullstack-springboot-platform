@@ -2,7 +2,7 @@
 1java-modern-test-framework-actions/
 ├── Pod-Container/
 │   ├── CONTAINER KILL ACTIONS.java    # Standalone Java reference for container/pod kill actions
-│   ├── CONTAINER KILL ACTIONS.md      # Detailed documentation
+│   ├── POD KILL ACTIONS.md      # Detailed documentation
 │   ├── 1.java                         # Full implementation walkthrough
 │   └── 1.feature                      # Gherkin scenarios
 ├── node/
