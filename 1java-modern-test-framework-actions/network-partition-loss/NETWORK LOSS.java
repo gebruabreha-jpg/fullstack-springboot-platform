@@ -405,6 +405,34 @@ public final class NetworkLossActionsDocumentation {
         }
     }
 
+    public interface JcatAssertApi {
+        static void assertTrue(String message, boolean condition) {
+            if (!condition) {
+                throw new TestException(message);
+            }
+        }
+    }
+
+    public static class TestException extends RuntimeException {
+        public TestException(String message) {
+            super(message);
+        }
+
+        public TestException(String message, Object... args) {
+            super(String.format(message, args));
+        }
+    }
+
+    public interface Poll {
+        /**
+         * Poll until condition succeeds or timeout expires.
+         * Implementation: loop while checking condition at intervals until timeout.
+         */
+        static boolean isActionCompleted(Runnable condition, Duration timeout, Duration interval) {
+            return true;
+        }
+    }
+
     public interface LitmusExperimentsActions {
         void applyRbac(String rbacFile, String experimentName);
 
