@@ -1,6 +1,9 @@
  Task 1: Pod/Container Kill — Complete Code
 
-  Here's the complete implementation covering both frameworks:
+Here's the complete implementation covering both frameworks:
+
+Key Differences: PCC uses parallel multi-pod kills with synchronization,
+while Beets uses sequential single-pod kills for CRE restart scenarios.
 
   ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 

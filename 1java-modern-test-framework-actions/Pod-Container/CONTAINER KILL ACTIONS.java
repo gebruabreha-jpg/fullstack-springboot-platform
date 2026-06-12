@@ -30,63 +30,66 @@ public final class ContainerKillActionsDocumentation {
     }
 
     public enum PodAction {
-        DELETED {
-            @Override
-            public void execute(final K8sNodeApis k8sNodeApis, final KubectlApi kubectlApi,
-                    final KubectlProperties kubectlProperties, final String podName) {
-                final int timeoutToRestore = kubectlApi.getShellTimeout();
-                try {
-                    kubectlApi.setShellTimeout(kubectlProperties.getShellTimeoutMsForDelete());
-                    kubectlApi.deletePodGrace(podName);
-                } finally {
-                    kubectlApi.setShellTimeout(timeoutToRestore);
-                }
-            }
-        },
+DELETED {
+             @Override
+             public void execute(final K8sNodeApis k8sNodeApis, final KubectlApi kubectlApi,
+                     final KubectlProperties kubectlProperties, final String podName) {
+                 final int timeoutToRestore = kubectlApi.getShellTimeout();
+                 try {
+                     kubectlApi.setShellTimeout(kubectlProperties.getShellTimeoutMsForDelete());
+                     kubectlApi.deletePodGrace(podName);
+                 } finally {
+                     kubectlApi.setShellTimeout(timeoutToRestore);
+                 }
+                 JcatLoggingApi.setTestInfo("Pod '%s' deletion completed", podName);
+             }
+         },
 
-        FORCE_DELETED {
-            @Override
-            public void execute(final K8sNodeApis k8sNodeApis, final KubectlApi kubectlApi,
-                    final KubectlProperties kubectlProperties, final String podName) {
-                final int timeoutToRestore = kubectlApi.getShellTimeout();
-                try {
-                    kubectlApi.setShellTimeout(kubectlProperties.getShellTimeoutMsForDelete());
-                    kubectlApi.deletePodForce(podName);
-                } finally {
-                    kubectlApi.setShellTimeout(timeoutToRestore);
-                }
-            }
-        },
+         FORCE_DELETED {
+             @Override
+             public void execute(final K8sNodeApis k8sNodeApis, final KubectlApi kubectlApi,
+                     final KubectlProperties kubectlProperties, final String podName) {
+                 final int timeoutToRestore = kubectlApi.getShellTimeout();
+                 try {
+                     kubectlApi.setShellTimeout(kubectlProperties.getShellTimeoutMsForDelete());
+                     kubectlApi.deletePodForce(podName);
+                 } finally {
+                     kubectlApi.setShellTimeout(timeoutToRestore);
+                 }
+                 JcatLoggingApi.setTestInfo("Pod '%s' force deletion completed", podName);
+             }
+         },
 
-        RESTARTED {
-            @Override
-            public void execute(final K8sNodeApis k8sNodeApis, final KubectlApi kubectlApi,
-                    final KubectlProperties kubectlProperties, final String podName) {
-                final List<KillRequest> killRequests;
-                final String nodeName;
-                synchronized (KubeCtl.class) {
-                    killRequests = Arrays.stream(kubectlApi.getContainers(podName))
-                            .map(containerName -> new KillRequest(podName, containerName,
-                                    kubectlApi.getContainerId(podName, containerName), KillSignal.SIGKILL))
-                            .toList();
-                    nodeName = kubectlApi.getNodeName(podName);
-                }
-                final K8sNodeApi k8sNodeApi = k8sNodeApis.getWithHostname(nodeName);
-                k8sNodeApi.killContainers(killRequests);
+         RESTARTED {
+             @Override
+             public void execute(final K8sNodeApis k8sNodeApis, final KubectlApi kubectlApi,
+                     final KubectlProperties kubectlProperties, final String podName) {
+                 final List<KillRequest> killRequests;
+                 final String nodeName;
+                 synchronized (KubeCtl.class) {
+                     killRequests = Arrays.stream(kubectlApi.getContainers(podName))
+                             .map(containerName -> new KillRequest(podName, containerName,
+                                     kubectlApi.getContainerId(podName, containerName), KillSignal.SIGKILL))
+                             .toList();
+                     nodeName = kubectlApi.getNodeName(podName);
+                 }
+                 final K8sNodeApi k8sNodeApi = k8sNodeApis.getWithHostname(nodeName);
+                 k8sNodeApi.killContainers(killRequests);
 
-                final Duration restartTimeoutInSec = k8sNodeApi.getContainerRestartTimeout();
-                final Duration intervalInSec = Duration.ofSeconds(1);
-                final boolean restartFinished = Poll.isActionCompleted(
-                        () -> !kubectlApi.checkResourcesUp(podName), restartTimeoutInSec, intervalInSec);
-                JcatAssertApi.assertTrue(
-                        String.format("'%s' action not finished within '%d' seconds", RESTARTED, restartTimeoutInSec.getSeconds()),
-                        restartFinished);
-            }
-        };
+                 final Duration restartTimeoutInSec = k8sNodeApi.getContainerRestartTimeout();
+                 final Duration intervalInSec = Duration.ofSeconds(1);
+                 final boolean restartFinished = Poll.isActionCompleted(
+                         () -> !kubectlApi.checkResourcesUp(podName), restartTimeoutInSec, intervalInSec);
+                 JcatAssertApi.assertTrue(
+                         String.format("'%s' action not finished within '%d' seconds", RESTARTED, restartTimeoutInSec.getSeconds()),
+                         restartFinished);
+                 JcatLoggingApi.setTestInfo("Pod '%s' restart completed", podName);
+             }
+         };
 
-        public abstract void execute(final K8sNodeApis k8sNodeApis, final KubectlApi kubectlApi,
-                final KubectlProperties kubectlProperties, final String podName);
-    }
+         public abstract void execute(final K8sNodeApis k8sNodeApis, final KubectlApi kubectlApi,
+                 final KubectlProperties kubectlProperties, final String podName);
+     }
 
     public interface K8sNodeApis {
         K8sNodeApi getWithHostname(String hostname);
@@ -132,6 +135,8 @@ public final class ContainerKillActionsDocumentation {
 
     public interface CommandResult {
         boolean isSuccessful();
+
+        String getOutput();
     }
 
     public interface ExtendedShellNavigator {
@@ -141,8 +146,18 @@ public final class ContainerKillActionsDocumentation {
     }
 
     public interface Poll {
-        static boolean isActionCompleted(Runnable action, Duration timeout, Duration interval) {
+        /**
+         * Poll until condition returns true or timeout expires.
+         * Actual implementation should loop with interval until condition succeeds or timeout.
+         * Example: while (!condition.run() && timeout not expired) { sleep(interval); }
+         */
+        static boolean isActionCompleted(Runnable condition, Duration timeout, Duration interval) {
             return true;
+        }
+    }
+
+    public interface JcatLoggingApi {
+        static void setTestInfo(String message, Object... args) {
         }
     }
 
@@ -210,9 +225,12 @@ public final class ContainerKillActionsDocumentation {
             execute(killCmd);
         }
 
-        private List<String> getPidsForContainerUsingCrictl(final List<String> containerIds) {
+private List<String> getPidsForContainerUsingCrictl(final List<String> containerIds) {
             return containerIds.stream()
-                    .map(id -> "12345")
+                    .map(id -> {
+                        final String crictlCmd = String.format("sudo crictl inspectp --id %s | jq -r .status.pid", id);
+                        return execute(crictlCmd).getOutput().trim();
+                    })
                     .collect(Collectors.toList());
         }
 

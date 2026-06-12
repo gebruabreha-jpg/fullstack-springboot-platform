@@ -81,26 +81,22 @@ How to verify system behavior after faults:
 - `verifyLinkStatusAndNexthopCountIsExpected(..., DOWN, ...)`
 - Check nexthop counts match expected values
 
-## Platform Engineering Considerations
+## Safety Guards (Best Practices)
 
-### Safety Guards
 - Always cleanup in `finally` blocks
 - Use timeouts for all polling operations
 - Verify node/pod state before and after actions
 - Log all actions for debugging
 
-### Parallel Execution
+## Parallel Execution Patterns
+
 - Use parallel streams for multi-node operations
 - Synchronize access to shared Kubernetes APIs
-- Coordinate start times for synchronized network loss
+- Coordinate start times for synchronized network loss (10s buffer in BashScheduleBuilder)
 
-### Idempotency
+## Idempotency Patterns
+
 - Actions should be safe to retry
 - Delete existing releases before reinstall
 - Handle already-cordoned/uncordoned nodes gracefully
-
-### Observability
-- Log command execution details
-- Record timestamps for fault injection and recovery
-- Save chaos experiment logs and describe outputs
-- Track test statistics for helm operations
+- Check resource existence before deletion

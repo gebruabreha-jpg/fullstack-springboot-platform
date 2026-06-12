@@ -354,6 +354,14 @@ public final class NetworkLossActionsDocumentation {
         int getTimeout();
 
         String getOutput();
+
+        default long getStartTime() {
+            return 0;
+        }
+
+        default long getEndTime() {
+            return 0;
+        }
     }
 
     public static class CommandOptions {

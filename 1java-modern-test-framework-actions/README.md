@@ -10,7 +10,7 @@
 │   ├── node_failure.md                # Detailed documentation
 │   ├── 2.java                         # Full implementation walkthrough
 │   └── 2.feature                      # Gherkin scenarios
-├── networ-partion-loss/
+├── network-partition-loss/
 │   ├── NETWORK LOSS.java              # Standalone Java reference for network loss actions
 │   ├── NETWORK LOSS.md                # Detailed documentation
 │   ├── 3.java                         # Full implementation walkthrough
@@ -60,7 +60,7 @@
   - `tc qdisc netem` for packet loss
   - Litmus experiments for pod-level network chaos
   - DCGW interface simulation
-- **Key Files**: `networ-partion-loss/NETWORK LOSS.java`, `networ-partion-loss/3.java`, `Litmus/1.java`
+- **Key Files**: `network-partition-loss/NETWORK LOSS.java`, `network-partition-loss/3.java`, `Litmus/1.java`
 
 ### 4. Pod Restart Actions
 - **Purpose**: Restart pods via deletion or container kill

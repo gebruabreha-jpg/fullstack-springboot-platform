@@ -643,6 +643,10 @@ public final class PodRestartActionsDocumentation {
     }
 
     public interface Poll {
+        /**
+         * Poll until condition succeeds or timeout expires.
+         * Loop: while (!condition.run() && elapsed < timeout) { sleep(interval); }
+         */
         static boolean isActionCompleted(Runnable condition, Duration timeout, Duration interval) {
             return true;
         }

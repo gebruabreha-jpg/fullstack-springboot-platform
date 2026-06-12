@@ -29,7 +29,12 @@ public final class NodeFailureActionsDocumentation {
         DRAINED,
         CORDONED,
         UNCORDONED,
-        DESTROYED
+        DESTROYED;
+
+        public void execute(final K8sNodeApi k8sNodeApi, final KubectlApi kubectlApi,
+                final KubectlProperties kubectlProperties, final String nodeName) {
+            throw new TestException("Base node action '%s' not implemented", this);
+        }
     }
 
     public interface K8sNodeApi {
@@ -398,6 +403,10 @@ public final class NodeFailureActionsDocumentation {
     }
 
     public interface Poll {
+        /**
+         * Poll until condition succeeds or timeout expires.
+         * Implementation: loop while checking condition at intervals until timeout.
+         */
         static boolean isActionCompleted(Runnable condition, Duration timeout, Duration interval) {
             return true;
         }

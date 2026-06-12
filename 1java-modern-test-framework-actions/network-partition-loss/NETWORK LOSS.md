@@ -1,5 +1,21 @@
 Here is the complete implementation across both frameworks, consolidated by action:
 
+## Overview
+
+This document covers network fault injection patterns for:
+- **Interface down/up**: Direct link state manipulation via `ip link`
+- **Packet loss/latency**: TC netem traffic control
+- **Litmus chaos experiments**: Pre-built chaos engine deployments
+
+## Overview
+
+This document covers network fault injection patterns for:
+- **Interface down/up**: Direct link state manipulation via `ip link`
+- **Packet loss/latency**: TC netem traffic control
+- **Litmus chaos experiments**: Pre-built chaos engine deployments
+
+## 1. Bring Down Network Interface (Node Interface Control)
+
 1. Bring Down Network Interface (Node Interface Control)
 PCC Framework — Step Definition (K8sNodeSteps.java:3258)
 

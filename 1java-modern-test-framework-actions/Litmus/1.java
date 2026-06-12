@@ -1,6 +1,17 @@
  Task 5: Litmus Chaos Experiments — Complete Code
 
-  ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+Complete workflow for Litmus chaos experiments in PCC/Beets frameworks.
+
+Workflow Steps:
+1. Install Litmus ChaosCenter via Helm
+2. Install Litmus operator (CRDs)
+3. Configure experiment engine (replace placeholders)
+4. Run experiment (RBAC → Experiment → Engine)
+5. Collect pod logs and describe outputs
+6. Validate ChaosResult verdict is 'Pass'
+7. Delete experiment files
+
+─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 
   LitmusExperimentsActions Interface (Contract)
 
