@@ -1,158 +1,152 @@
-# Modern Test Framework
-A modern test framework built with Java, Quarkus, Kubernetes client, Helm, and JUnit 5.
-## Project Structure
-modern-test-framework/
-├── pom.xml
-├── src/
-│   ├── main/
-│   │   └── java/
-│   │       └── com/example/testfw/
-│   │           ├── config/TestConfig.java
-│   │           ├── driver/TRexDriver.java
-│   │           └── util/ParallelExecutor.java
-│   └── test/
-│       └── java/
-│           └── com/example/testfw/
-│               ├── driver/TRexDriverTest.java
-│               └── util/ParallelExecutorTest.java
-├── src/
-│   └── main/
-│       └── resources/
-│           └── application.yaml
-└── README.md
+# Modern Test Framework Actions — Platform Engineering Guide
+
+## Overview
+
+This directory documents fault injection and deployment actions extracted from the PCC and Beets test frameworks. The Java files are self-contained reference implementations that show how each action pattern works independently, without requiring the full project context.
+
+## Directory Structure
+
+```
+1java-modern-test-framework-actions/
+├── Pod-Container/
+│   ├── CONTAINER KILL ACTIONS.java    # Standalone Java reference for container/pod kill actions
+│   ├── CONTAINER KILL ACTIONS.md      # Detailed documentation
+│   ├── 1.java                         # Full implementation walkthrough
+│   └── 1.feature                      # Gherkin scenarios
+├── node/
+│   ├── node_failure.java              # Standalone Java reference for node failure actions
+│   ├── node_failure.md                # Detailed documentation
+│   ├── 2.java                         # Full implementation walkthrough
+│   └── 2.feature                      # Gherkin scenarios
+├── networ-partion-loss/
+│   ├── NETWORK LOSS.java              # Standalone Java reference for network loss actions
+│   ├── NETWORK LOSS.md                # Detailed documentation
+│   ├── 3.java                         # Full implementation walkthrough
+│   └── 3.feature                      # Gherkin scenarios
+├── pod-restart/
+│   ├── POD RESTART.java               # Standalone Java reference for pod restart actions
+│   ├── POD RESTART.md                 # Detailed documentation
+│   ├── 1.java                         # Full implementation walkthrough
+│   └── 2.feature                      # Gherkin scenarios
+├── helm/
+│   ├── Helm deployments.java          # Standalone Java reference for Helm deployment actions
+│   ├── Helm deployments.md            # Detailed documentation
+│   └── 1.java                         # Full implementation walkthrough
+├── Litmus/
+│   ├── 1.java                         # Litmus chaos experiment implementation
+│   └── 1.feature                      # Gherkin scenarios
+├── action.md                          # Action chaining and verification notes
+└── README.md                          # This file
 ```
 
-## Components Created
+## Action Categories
 
-1. **TestConfig.java** - Configuration record for test environment
-   - Fields: namespace, cluster, kubeconfig (Path)
+### 1. Container/Pod Kill Actions
+- **Purpose**: Kill containers or restart pods to test resilience
+- **Mechanisms**:
+  - Kill specific container by pod prefix/resource name
+  - Kill process inside container with configurable signal (SIGTERM, SIGKILL)
+  - Restart pod by killing all containers
+  - Sequential paired kills for KVDB master/replica testing
+- **Key Files**: `Pod-Container/CONTAINER KILL ACTIONS.java`, `Pod-Container/1.java`
 
-2. **TRexDriver.java** - Driver for managing TRex traffic generator
-   - Methods: start(), stop(), isRunning(), upload(), download(), collectLogs()
-   - Uses Kubernetes client for cluster operations (no SSH/shell execution)
-   - Manages TRex via Deployments, Services, and ConfigMaps
-   - Supports Helm chart deployment for complex environments
+### 2. Node Failure Actions
+- **Purpose**: Simulate node-level failures (restart, shutdown, kernel panic, drain, cordon)
+- **Supported Node Types**:
+  - Baremetal (IPMI/CAPI)
+  - Mesos (computeHost)
+  - Nexus/Azure
+  - GDCE (Pub/Sub)
+  - CEE/OpenStack
+  - LPG (IPMI)
+- **Key Files**: `node/node_failure.java`, `node/2.java`
 
-3. **ParallelExecutor.java** - Modern parallel execution utility
-   - Uses Java 21 StructuredTaskScope and virtual threads
-   - Replaces legacy parallel execution utilities
-   - Provides structured concurrency with proper error handling
+### 3. Network Loss/Partition Actions
+- **Purpose**: Inject network impairments (interface down, packet loss, Litmus chaos)
+- **Mechanisms**:
+  - `ip link set` for interface control
+  - `tc qdisc netem` for packet loss
+  - Litmus experiments for pod-level network chaos
+  - DCGW interface simulation
+- **Key Files**: `networ-partion-loss/NETWORK LOSS.java`, `networ-partion-loss/3.java`, `Litmus/1.java`
 
-4. **Tests** - JUnit 5 tests verifying:
-   - TRexDriver lifecycle and method signatures
-   - ParallelExecutor functionality (success, failure, timeout)
+### 4. Pod Restart Actions
+- **Purpose**: Restart pods via deletion or container kill
+- **Mechanisms**:
+  - Delete pod and wait for recreation
+  - Kill container to trigger restart
+  - Coordinated restart during Helm upgrade
+  - Random pod selection for robustness testing
+- **Key Files**: `pod-restart/POD RESTART.java`, `pod-restart/1.java`
 
-5. **application.yaml** - Configuration file with test defaults
-   ```yaml
-   test:
-     namespace: test-ns
-     cluster: test-cluster
-     kubeconfig: ~/.kube/config
-   ```
+### 5. Helm Deployment Actions
+- **Purpose**: Manage Helm chart lifecycle (install, upgrade, rollback, delete)
+- **Mechanisms**:
+  - Install with values/files/version
+  - Upgrade with command-line parameters
+  - Rollback to specific revision
+  - Coordinated upgrade with pod restart
+- **Key Files**: `helm/Helm deployments.java`, `helm/1.java`
 
-## Dependencies
+### 6. Litmus Chaos Experiments
+- **Purpose**: Run chaos experiments via Litmus operator
+- **Supported Experiments**:
+  - `pod_cpu_hog`
+  - `pod_memory_hog`
+  - `container_kill`
+  - `pod_network_loss`
+  - `pod_network_partition`
+  - `pod_network_latency`
+  - `pod_network_corruption`
+  - `pod_io_stress`
+  - `kubelet_service_kill`
+  - `docker_service_kill`
+- **Key Files**: `Litmus/1.java`, `networ-partion-loss/NETWORK LOSS.java`
 
-- Quarkus Core
-- JUnit Jupiter (test scope)
-- Fabric8 Kubernetes Client
-- Fabric8 Helm Client (for chart-based deployments)
-- Quarkus Micrometer Registry Prometheus (for metrics observability)
-- SLF4J API (for logging)
+## Platform Engineering Notes
 
-## Key Modernizations vs Legacy PCC Framework
+### Action Chaining
+Shows how to chain multiple faults together:
+- KVDB kill + CRE restart
+- Helm upgrade + pod restart
+- Node drain + network loss
+- DCGW shutdown + interface recovery
 
-| Legacy Pattern | Modern Replacement |
-|----------------|-------------------|
-| Guice DI Modules | Quarkus CDI (@Inject, @Singleton) |
-| SSH/Shell Navigation (ToolServerNavigator) | Fabric8 Kubernetes Client (direct API calls) |
-| TestNG + Cucumber Hybrid | JUnit 5 + Quarkus Test |
-| Static Injection | Proper DI with @Inject |
-| Custom Parallel Execution Utilities | Java 21 StructuredTaskScope (virtual threads) |
-| Manual Resource Cleanup | Try-with-resources & Kubernetes client auto-close |
-| Imperative Shell Commands | Declarative Kubernetes API (Deployments, ConfigMaps) |
-| Manual YAML Application | Helm Chart Management |
-| Limited Observability | Prometheus Metrics Export |
+### Cleanup Patterns
+How experiments clean up:
+- Uncordon nodes after drain
+- Restore network interfaces after bring-down
+- Delete Litmus CRDs after experiments
+- Restore navigator state after DCGW operations
 
-## Usage Example
+### Verification Patterns
+How to verify system behavior after faults:
+- Traffic interruption time
+- Pod recovery time
+- Session continuity after faults
+- Chaos result validation (Pass/Fail)
 
-```java
-// Configure test environment
-TestConfig config = new TestConfig("test-ns", "test-cluster", 
-        Path.of(System.getProperty("user.home"), ".kube", "config"));
+## Java File Design
 
-// Create and start TRex driver using Helm chart
-TRexDriver trexDriver = new TRexDriver(config);
-trexDriver.startWithHelmChart("oci://registry.example.com/trex-chart", 
-        Map.of("replicaCount", "2", "image.tag", "latest"));
+Each standalone Java file follows this pattern:
+1. **Nested interfaces** - Define contracts for external dependencies
+2. **Nested enums** - Define action types and configurations
+3. **Static helper classes** - Implement the core action logic
+4. **Default implementations** - Provide no-op or simple implementations for interfaces
 
-// Verify TRex is running
-assertTrue(trexDriver.isRunning());
+This allows each file to be read independently without needing the full project build context.
 
-// Upload configuration to TRex
-trexDriver.upload(Path.of("local-config.lua"), "trex-config.lua");
+## Usage
 
-// Execute test scenario (example: parallel traffic generation)
-List<Callable<Void>> trafficTasks = List.of(
-        () -> { trexDriver.startTraffic("http"); return null; },
-        () -> { trexDriver.startTraffic("https"); return null; }
-);
-ParallelExecutor.executeAll(trafficTasks);
+These files are reference documentation, not production code. They show:
+- How actions are structured in the real framework
+- What dependencies each action needs
+- How step definitions map to implementation methods
+- How cleanup and verification are handled
 
-// Collect results
-String logs = trexDriver.collectLogs();
-assertTrue(logs.contains("TRAFFIC STARTED"));
-
-// Collect metrics (if Prometheus integration enabled)
-String metrics = trexDriver.collectMetrics();
-assertTrue(metrics.contains("test_framework_"));
-
-// Cleanup
-trexDriver.stop();
-```
-
-## Next Steps
-
-1. **Add more tool drivers** (Ixia, IXIA, etc.) following the same pattern
-2. **Create test orchestration service** to manage multiple tools
-3. **Implement advanced assertions** for test result validation
-4. **Add multi-cluster/tenant support** using Kubernetes contexts
-5. **Create JUnit 5 extensions** for automatic setup/teardown
-6. **Add custom metrics** for specific test KPIs
-
-## Build and Test
-
-### Prerequisites
-- Java 21+
-- Maven 3.8+
-- Access to Kubernetes cluster (for integration tests)
-- Helm v3+ (for chart operations)
-- Prometheus server (optional, for metrics scraping)
-- Quarkus extensions (optional, for dev mode)
-
-### Commands
-```bash
-# Compile and test
-./mvnw compile test-compile
-
-# Run unit tests
-./mvnw test
-
-# Run in Quarkus dev mode (optional)
-./mvnw quarkus:dev
-
-# Package as executable jar
-./mvnw package
-```
-
-## Design Principles
-
-1. **Immutable Configuration** - Using Java records for config objects
-2. **Resource Safety** - Try-with-resources for Kubernetes client
-3. **Structured Concurrency** - Java 21 StructuredTaskScope for parallel execution
-4. **Declarative Infrastructure** - Kubernetes API instead of shell commands
-5. **Chart-Based Deployments** - Helm for complex test environments
-6. **Observability** - Prometheus metrics for test execution insights
-7. **Fail Fast** - Immediate validation and clear error messages
-8. **Testability** - Dependency injection and interface segregation
-
-The framework is designed to be extensible - new tool drivers can be added by implementing similar patterns using the Kubernetes client for resource management, with optional Helm chart support for complex deployments.
+Container/Pod Kill — kill containers, restart pods, signal injection
+Node Failure — simulate baremetal/Mesos/Nexus node failures
+Network Loss/Partition — tc netem, interface down, Litmus network chaos
+Pod Restart — delete/kill pods, coordinated Helm-upgrade restarts
+Helm Deployments — install, upgrade, rollback, delete
+Litmus Chaos — CPU/memory hog, network loss/latency/corruption, IO stress, service kills
