@@ -44,10 +44,14 @@ Uninstall:  helm uninstall app
 
 | Level | Actions | Validates |
 |-------|---------|-----------|
-| Container | SIGKILL container, hard-stop processes | Restart policies, liveness probes, stateless recovery |
-| Pod | Delete Pod, Evict Pod, Kill app container | ReplicaSet self-healing, service discovery, load balancing |
-| Node | Restart/shutdown, kernel panic, drain/cordon | Rescheduling, cluster capacity, stateful workloads |
-| Network | tc netem (latency/packet loss), interface down | Retries, circuit breakers, service mesh resilience, timeouts |
+
+Container | SIGKILL container, hard-stop processes | Restart policies, liveness probes, stateless recovery 
+
+Pod | Delete Pod, Evict Pod, Kill app container | ReplicaSet self-healing, service discovery, load balancing |
+
+Node | Restart/shutdown, kernel panic, drain/cordon | Rescheduling, cluster capacity, stateful workloads |
+
+Network | tc netem (latency/packet loss), interface down | Retries, circuit breakers, service mesh resilience, timeouts |
 
 ### Implementation Notes
 
@@ -65,3 +69,60 @@ This reference project demonstrates how to structure test automation for Kuberne
 3. **Cleanup is critical** — Always restore state in `finally` blocks
 4. ** Abstraction layers** — Same interface, different implementations per platform
 5. **Verification patterns** — Poll until condition, assert on recovery state
+
+
+🧱 Container / Process level (inside a Pod)
+SIGKILL (container kill)
+Hard-stop of a process inside a container (no cleanup).
+In Kubernetes terms: container runtime receives kill signal.
+Used to simulate:
+sudden app crash
+OOM-like termination (though OOM is different signal-wise)
+
+👉 Effect: container restarts depending on restartPolicy and Pod health.
+
+📦 Pod level (Kubernetes scheduling unit)
+
+Kubernetes
+
+Pod delete (kubectl delete pod)
+Kills all containers in the Pod
+New Pod may be recreated by Deployment/ReplicaSet
+Pod eviction
+Happens during node pressure or drain
+
+👉 Effect:
+
+Tests self-healing (ReplicaSet re-creates Pod)
+Validates readiness/liveness probes
+🖥️ Node level (worker machine)
+Kernel panic / Node crash
+Hard failure of the node OS
+Node restart / shutdown
+Simulates maintenance or outage
+Node cordon
+Marks node as unschedulable (no new Pods)
+Node drain
+Evicts all Pods safely before maintenance
+
+Kubernetes behavior:
+
+Pods rescheduled elsewhere (if managed by controllers)
+Stateful workloads may behave differently depending on storage
+
+👉 Effect:
+
+Tests cluster resilience, rescheduling, topology spread
+🌐 Network level (fault injection)
+tc netem
+Adds latency, packet loss, jitter, reordering
+Interface down
+Simulates full network partition
+
+👉 Effect:
+
+Tests:
+retry logic
+circuit breakers
+timeouts
+service mesh resilience (if present)
