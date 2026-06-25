@@ -67,6 +67,9 @@ pip install -r requirements.txt
 
 ```bash
 uvicorn main:app --reload
+
+python -m uvicorn main:app --reload
+
 ```
 Server will start at:
 

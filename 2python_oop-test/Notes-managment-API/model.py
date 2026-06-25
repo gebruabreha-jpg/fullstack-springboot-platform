@@ -3,13 +3,13 @@
 from pydantic import BaseModel 
 from typing import List
 
-class note:
-    def __init__(self):
-        self.id=id
-        self.title=title
-        self.content=content
-        self.tag=tag
-class notecreat(BaseModel):
-    title:str
-    content:str
-    tag =list[str]
+class Note(BaseModel):
+    id: int
+    title: str
+    content: str
+    tag: list[str]
+
+class NoteCreate(BaseModel):
+    title: str
+    content: str
+    tag: list[str]
