@@ -1,9 +1,9 @@
 from model import Note, NoteCreate
-from repository import noterepository
+from repository import NoteRepository
 
 
-class noteservice:
-    def __init__(self, repo: noterepository):
+class NoteService:
+    def __init__(self, repo: NoteRepository):
         self.repo = repo
         self.MAX_TITLE_LENGTH = 100
         self.FORBIDDEN_WORDS = ["spam", "test"]
@@ -13,7 +13,7 @@ class noteservice:
         return self.repo.add(note_data)
 
     def get_notes_by_tag(self, tag: str) -> list[Note]:
-        return [n for n in self.repo.fetch() if tag in n.tag]
+        return [n for n in self.repo.fetch() if tag in n.tags]
 
     def search_notes(self, query: str) -> list[Note]:
         query = query.lower()
@@ -28,5 +28,5 @@ class noteservice:
         for word in self.FORBIDDEN_WORDS:
             if word in note_data.title.lower():
                 raise ValueError(f"Forbidden word: {word}")
-        if not note_data.tag:
+        if not note_data.tags:
             raise ValueError("At least one tag is required")

@@ -167,7 +167,8 @@ This project helps practice:
 * CRUD operations
 * Search/filtering logic
 * FastAPI fundamentals
----
 
-## License
-This project is for learning purposes.
+async / await in Python:-
+It's a way to write concurrent code without threads. Instead of blocking on I/O (database, HTTP calls, file reads), the program pauses and lets other tasks run while waiting.
+
+Use async when I/O-bound, threads when CPU-bound. For a notes API, async is the standard choice. Threading is rarely needed unless you're doing heavy computation.
