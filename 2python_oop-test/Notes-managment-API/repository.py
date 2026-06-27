@@ -20,3 +20,7 @@ class noterepository():
         self.id += 1
         return my_note
 
+#Add type hints for clarity:
+   #def fetch(self) -> list[Note]:
+   #def fetch_by_id(self, id: int) -> Note | None:
+   #def add(self, note1: NoteCreate) -> Note:

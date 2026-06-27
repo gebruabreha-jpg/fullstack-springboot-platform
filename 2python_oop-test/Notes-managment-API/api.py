@@ -1,5 +1,4 @@
 from fastapi import APIRouter, HTTPException
-from typing import List
 from model import Note, NoteCreate
 from repository import noterepository
 from service import noteservice
@@ -23,12 +22,11 @@ def get_note_by_id(note_id: int):
     note = repository1.fetch_by_id(note_id)
     if not note:
         raise HTTPException(status_code =404, detail ="note not found")
-
-    retun ¨{"message" : "deleted"}
+    retun note
 
 @router.delete("/notes/{note_id}")
 def delete_note(note_id: int):
     note = repository1.delete(note_id)
     if not note:
         raise HTTPException(status_code=404, detail="Note not found")
-    return {"message": "Deleted")
+    return {"message": "Deleted"}
