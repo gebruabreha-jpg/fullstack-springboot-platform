@@ -2,9 +2,9 @@ from model import Book
 from schema import BookCreate
 from typing import Optional
 
-class Bookrepository:
+class BookRepository:
     def __init__(self):
-        self.db: list[Book]= []
+        self.db: list[Book] = []
         self.id = 1
     
     def fetch(self) -> list[Book]:
@@ -15,11 +15,10 @@ class Bookrepository:
             if book.id == id:
                 return book
         return None
-
+    
     def add(self, book_data: BookCreate) -> Book:
         book = Book(id=self.id, title=book_data.title, 
-                    author=book_data.author, isbn=book_data.isbn,
-                    available=book_data.available)
+                    author=book_data.author, available=book_data.available)
         self.db.append(book)
         self.id += 1
         return book
